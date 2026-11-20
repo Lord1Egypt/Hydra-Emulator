@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Unit tests (Windows / Node ${{ matrix.node }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      # Elementron binary is not required for unit testing, skipping 188MB downloads to speed up CI
+      - name: Install dependencies
+        run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+
+      - name: Run the test suite
+        run: npm test
+
+      # Directly drives the echo of the hook embedded in the agent.ps1 C# to prevent key map from being altered
+      - name: Smoke-test the Windows pointer hook
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          $out = & .\test\pointer-hook-logic.ps1
+          $out | ForEach-Object { Write-Host $_ }
+          if (-not ($out -contains 'POINTER_HOOK_LOGIC_OK')) { exit 1 }

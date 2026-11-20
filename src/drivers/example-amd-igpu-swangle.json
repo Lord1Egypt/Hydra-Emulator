@@ -1,0 +1,21 @@
+{
+  "format": "hydra-driver/1",
+  "id": "example-amd-igpu-swangle",
+  "name": "AMD Nuclear Highlighting . Change to swangle rendering (example))",
+  "version": "1.0.0",
+  "author": "Hydra Emulator",
+  "description": "Part of the AMD + old drive, -gpu host can self-check through emulator, but the guest is active (only AEHD is active in the logs).",
+  "enabled": false,
+  "priority": 0,
+  "match": {
+    "platform": ["win32"],
+    "gpuVendor": ["amd"]
+  },
+  "effect": {
+    "gpuMode": "swangle",
+    "notes": [
+      "If the picture is normal but the game is stuck, you can adjust the \" paint\" to 540 x 960 in the settings.",
+      "When it is confirmed that it is available, replace the enabled with a true or delete line and it will automatically take effect."
+    ]
+  }
+}

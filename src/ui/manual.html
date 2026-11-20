@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydra Emulator User Manual</title>
+<style>
+:root{--bg:#ffffff;--fg:#1f2328;--mut:#57606a;--line:#d0d7de;--code:#eff1f3;--accent:#0969da;--accent-soft:#ddf4ff;--warn:#9a6700;--warn-bg:#fff8c5;--head:#f6f8fa;--tbl:#f6f8fa}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--fg);background:var(--bg)}
+.wrap{display:flex;max-width:1180px;margin:0 auto}
+aside{position:sticky;top:0;height:100vh;overflow:auto;width:280px;flex:0 0 280px;border-right:1px solid var(--line);padding:24px 18px;background:var(--head)}
+aside h2{font-size:15px;margin:0 0 14px;letter-spacing:.5px}
+aside a{display:block;color:var(--mut);text-decoration:none;padding:3px 8px;border-radius:6px;font-size:13.5px;line-height:1.45}
+aside a:hover{background:var(--accent-soft);color:var(--accent)}
+#tocSearch{width:100%;margin-bottom:12px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;font:13px/1.4 inherit;background:#fff;color:var(--fg)}
+#tocSearch:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.toc-l3{padding-left:22px!important;font-size:12.5px!important;color:#8c959f!important}
+main{flex:1;min-width:0;padding:40px 48px 80px}
+h1{font-size:30px;margin:0 0 8px;padding-bottom:16px;border-bottom:2px solid var(--line)}
+h2{font-size:23px;margin:42px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--line);scroll-margin-top:16px}
+h3{font-size:18px;margin:30px 0 12px;scroll-margin-top:16px}
+h4{font-size:16px;margin:22px 0 8px}
+p{margin:12px 0}
+a{color:var(--accent)}
+code{background:var(--code);padding:2px 6px;border-radius:6px;font:13.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+pre{background:var(--code);padding:16px 18px;border-radius:8px;overflow:auto;border:1px solid var(--line)}
+pre code{background:none;padding:0}
+blockquote{margin:16px 0;padding:10px 16px;border-left:4px solid var(--warn);background:var(--warn-bg);color:#633c01;border-radius:0 8px 8px 0}
+blockquote p{margin:0}
+ul,ol{margin:12px 0;padding-left:26px}
+li{margin:5px 0}
+hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+.tw{overflow:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--tbl);font-weight:600;white-space:nowrap}
+tbody tr:nth-child(even){background:#fbfcfd}
+.btnbar{position:fixed;right:22px;bottom:22px;display:flex;gap:8px}
+.btnbar button{border:1px solid var(--line);background:#fff;color:var(--fg);border-radius:8px;padding:9px 14px;font-size:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.btnbar button:hover{border-color:var(--accent);color:var(--accent)}
+@media (max-width:880px){aside{display:none}main{padding:24px 20px 60px}h1{font-size:25px}}
+@media print{aside,.btnbar{display:none}main{padding:0;max-width:none}h2{page-break-after:avoid}table,pre,blockquote{page-break-inside:avoid}a{color:inherit;text-decoration:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside><h2>Contents</h2>
+<input id="tocSearch" type="search" placeholder="Filter sections" autocomplete="off" />
+<div id="tocList"><a class="toc-l2" href="#1-getting-started">1. Getting started</a>
+<a class="toc-l2" href="#2-installation-and-first-launch">2. Installation and first launch</a>
+<a class="toc-l2" href="#3-everyday-use">3. Everyday use</a>
+<a class="toc-l3" href="#3-1-install-and-remove-apps">3.1 Install and remove apps</a>
+<a class="toc-l3" href="#3-2-app-windows-and-shortcuts">3.2 App windows and shortcuts</a>
+<a class="toc-l3" href="#3-3-share-files-with-android">3.3 Share files with Android</a>
+<a class="toc-l3" href="#3-6-settings-navigation">3.6 Settings navigation</a>
+<a class="toc-l3" href="#3-7-updates">3.7 Updates</a>
+<a class="toc-l2" href="#4-how-the-runtime-works">4. How the runtime works</a>
+<a class="toc-l3" href="#4-1-android-image-and-app-data">4.1 Android image and app data</a>
+<a class="toc-l3" href="#4-2-hardware-acceleration">4.2 Hardware acceleration</a>
+<a class="toc-l3" href="#4-3-arm-translation">4.3 ARM translation</a>
+<a class="toc-l2" href="#5-diagnostics-and-repairs">5. Diagnostics and repairs</a>
+<a class="toc-l3" href="#5-1-system-preflight">5.1 System preflight</a>
+<a class="toc-l3" href="#5-2-automatic-diagnostics-and-networking">5.2 Automatic diagnostics and networking</a>
+<a class="toc-l3" href="#5-3-export-a-diagnostic-report">5.3 Export a diagnostic report</a>
+<a class="toc-l3" href="#5-4-user-manual-and-automatic-troubleshooting">5.4 User manual and automatic troubleshooting</a>
+<a class="toc-l2" href="#6-troubleshooting">6. Troubleshooting</a>
+<a class="toc-l3" href="#6-1-hardware-acceleration-unavailable">6.1 Hardware acceleration unavailable</a>
+<a class="toc-l3" href="#6-2-apk-installation-errors">6.2 APK installation errors</a>
+<a class="toc-l3" href="#6-3-arm-apps-fail-or-crash">6.3 ARM apps fail or crash</a>
+<a class="toc-l3" href="#6-4-adb-authorization">6.4 ADB authorization</a>
+<a class="toc-l3" href="#6-5-app-shortcut-or-window-fails-to-open">6.5 App shortcut or window fails to open</a>
+<a class="toc-l3" href="#6-6-other-startup-problems">6.6 Other startup problems</a>
+<a class="toc-l3" href="#6-7-no-sound-or-low-volume">6.7 No sound or low volume</a>
+<a class="toc-l3" href="#6-8-store-build-startup-error-0xc0000135">6.8 Store build startup error 0xC0000135</a>
+<a class="toc-l2" href="#7-command-line">7. Command line</a>
+<a class="toc-l2" href="#8-data-and-directories">8. Data and directories</a>
+<a class="toc-l2" href="#9-get-help">9. Get help</a></div>
+</aside>
+<main>
+<h1 id="hydra-emulator-user-manual">Hydra Emulator User Manual</h1>
+<blockquote>Hydra Emulator v0.6.3 · Windows 10 and 11 (x64)</blockquote>
+<p>Hydra Emulator installs Android apps from APK files and opens them from Windows shortcuts. This manual covers initial setup, everyday use, and troubleshooting.</p>
+<h2 id="1-getting-started">1. Getting started</h2>
+<ol><li>Start Hydra Emulator on Windows.</li><li>Open <strong>Settings → General &amp; Installation</strong> and run the automatic runtime setup.</li><li>Drag an APK into Hydra Emulator or use <strong>Install APK</strong>.</li><li>Launch the installed app from its card or its desktop or Start menu shortcut.</li></ol>
+<p>Each shortcut uses the icon extracted from its APK. Hydra starts the Android runtime on demand and restores a compatible Quick Boot snapshot if one is available.</p>
+<h2 id="2-installation-and-first-launch">2. Installation and first launch</h2>
+<div class="tw"><table><thead><tr><th>Build</th><th>Runtime</th></tr></thead><tbody><tr><td>Light portable ZIP</td><td>Downloads the runtime and Android 14 image during initial setup.</td></tr><tr><td>Full portable ZIP</td><td>Includes the runtime and system image. Extract the archive before launching.</td></tr><tr><td>Windows installer</td><td>Installs the full runtime and adds a Windows uninstall entry.</td></tr><tr><td>MSIX</td><td>Packages the runtime and uses the configured Store or deployment channel for updates.</td></tr></tbody></table></div>
+<p>See the <a href="https://github.com/Lord1Egypt/Hydra-Emulator/releases">GitHub releases page</a> for published builds. On the first launch, Hydra Emulator may need to download the runtime, expand the Android system image, initialize the guest data partition, and boot the guest. Subsequent launches can reuse that setup.</p>
+<h2 id="3-everyday-use">3. Everyday use</h2>
+<h3 id="3-1-install-and-remove-apps">3.1 Install and remove apps</h3>
+<p>Use the main window, drag an APK onto it, or pass its path on the command line. Enable the <strong>.apk</strong> file association under <strong>Settings → Integration &amp; Files</strong> if you want to install the file directly from File Explorer. Hydra also supports split APK bundles in <code>.apks</code> and <code>.xapk</code> format.</p>
+<p>Right-click an app card for actions such as creating a shortcut and uninstalling the app. When several apps share the runtime, launching another app with the same orientation can reuse the running guest.</p>
+<h3 id="3-2-app-windows-and-shortcuts">3.2 App windows and shortcuts</h3>
+<div class="tw"><table><thead><tr><th>Shortcut</th><th>Action</th></tr></thead><tbody><tr><td><code>F11</code></td><td>Switch between fullscreen and windowed mode.</td></tr><tr><td><code>Ctrl+Alt+R</code></td><td>Rotate the active app.</td></tr><tr><td><code>Ctrl+R</code></td><td>Rotate the app when it is hosted in a Hydra shell window.</td></tr></tbody></table></div>
+<p>The title bar can also rotate the app. Hydra remembers the orientation for that app. An orientation change can require a runtime restart when the virtual display needs to change shape. Use <strong>Settings → Display &amp; Window</strong> to set orientation, automatic fullscreen, tablet layout, and window mode.</p>
+<h3 id="3-3-share-files-with-android">3.3 Share files with Android</h3>
+<p>Open <strong>Settings → Integration &amp; Files</strong> to choose the Windows and Android shared folders, run synchronization, or open the Windows folder. The defaults are <code>%USERPROFILE%\HydraShared</code> and <code>/sdcard/HydraShared</code>. Changes to either folder are copied during synchronization.</p>
+<h3 id="3-6-settings-navigation">3.6 Settings navigation</h3>
+<p>The search field matches labels and descriptions across categories.</p>
+<div class="tw"><table><thead><tr><th>Category</th><th>What you can change</th></tr></thead><tbody><tr><td>General &amp; Installation</td><td>Runtime setup, launch at login, storage, and guest reset.</td></tr><tr><td>Display &amp; Window</td><td>Window mode, orientation, fullscreen, and tablet layout.</td></tr><tr><td>Controls &amp; Input</td><td>Mouse controls and key mapping.</td></tr><tr><td>Performance &amp; Resources</td><td>CPU, memory, rendering, storage, guest language, audio, and Quick Boot.</td></tr><tr><td>Network &amp; Downloads</td><td>Release asset mirrors and the number of download connections.</td></tr><tr><td>Diagnostics &amp; Fixes</td><td>System preflight, hardware profiles, monitoring, repairs, and diagnostic reports.</td></tr><tr><td>Integration &amp; Files</td><td>Windows shortcuts, APK association, shared folders, and data locations.</td></tr><tr><td>Updates &amp; About</td><td>Update status, app version, source links, and the user manual.</td></tr><tr><td>Laboratory</td><td>Experimental background app retention. Several apps can stay resident, with one guest app visible at a time.</td></tr></tbody></table></div>
+<h3 id="3-7-updates">3.7 Updates</h3>
+<p>Open <strong>Settings → Updates &amp; About → Check for Updates</strong>. Portable builds can use a small application update when the Electron version matches and the files pass verification. Otherwise Hydra falls back to a full portable download when one is available. The update leaves Android data and snapshots in their data directory. Store installations follow their Store update channel.</p>
+<h2 id="4-how-the-runtime-works">4. How the runtime works</h2>
+<h3 id="4-1-android-image-and-app-data">4.1 Android image and app data</h3>
+<p>Hydra's built-in runtime uses the Android 14 Google Play x86-64 system image. The image contains Android itself. Installed packages, user data, and Quick Boot snapshots reside in the virtual device directory. A damaged image or an incompatible data partition can prevent startup.</p>
+<h3 id="4-2-hardware-acceleration">4.2 Hardware acceleration</h3>
+<p><strong>Windows Hypervisor Platform (WHPX)</strong> uses Windows virtualization features. <strong>Android Emulator Hypervisor Driver (AEHD)</strong> is an alternative when the host supports it. Hydra can fall back to software emulation, which can take several minutes to boot and may render more slowly.</p>
+<h3 id="4-3-arm-translation">4.3 ARM translation</h3>
+<p>The Android x86-64 image uses an ARM translation layer for compatible apps that ship ARM native libraries. Native-library dependencies, unsupported instructions, and device requirements can still prevent some apps from running.</p>
+<h2 id="5-diagnostics-and-repairs">5. Diagnostics and repairs</h2>
+<h3 id="5-1-system-preflight">5.1 System preflight</h3>
+<p>Open <strong>Settings → Diagnostics &amp; Fixes → Run Diagnostic Preflight</strong>. The report checks CPU virtualization, the Windows hypervisor, the GPU and driver, physical memory, and Windows support. Choose <strong>Apply Recommended Settings</strong> to save the suggested hardware profile.</p>
+<p>If virtualization is disabled in firmware, enable <strong>Intel VT-x</strong> or <strong>AMD SVM</strong> in BIOS or UEFI and rerun the checks after rebooting.</p>
+<h3 id="5-2-automatic-diagnostics-and-networking">5.2 Automatic diagnostics and networking</h3>
+<p>Enable <strong>Automatic Monitoring</strong> in <strong>Diagnostics &amp; Fixes</strong> to check for stalled boots, stale locks, orphan processes, snapshots, ADB connectivity, storage, settings conflicts, and guest network failures. An issue can offer a repair such as restarting the runtime, clearing stale locks, or resetting guest networking. The issue list refreshes after a repair.</p>
+<p>If only network-dependent Android apps fail, check the guest network diagnosis. If runtime downloads fail, also check Windows connectivity and <strong>Settings → Network &amp; Downloads</strong>.</p>
+<h3 id="5-3-export-a-diagnostic-report">5.3 Export a diagnostic report</h3>
+<p>Use <strong>Settings → Diagnostics &amp; Fixes → Export Diagnostics Report</strong>. The report includes startup settings, diagnostic results, and recent log entries. Review it for private paths and app information before attaching it to an issue.</p>
+<h3 id="5-4-user-manual-and-automatic-troubleshooting">5.4 User manual and automatic troubleshooting</h3>
+<p>Open the manual from the main window or <strong>Settings → Updates &amp; About</strong>. Use the contents or search to find a section, and use <strong>Print / Save as PDF</strong> for a copy. A diagnostic item's help button opens the relevant section. Hydra can also open a matching section automatically when an install or fix fails.</p>
+<h2 id="6-troubleshooting">6. Troubleshooting</h2>
+<h3 id="6-1-hardware-acceleration-unavailable">6.1 Hardware acceleration unavailable</h3>
+<p>Use <strong>Diagnostics &amp; Fixes</strong> to check BIOS virtualization and run the acceleration repair. Enable <strong>Windows Hypervisor Platform</strong> in <strong>Turn Windows features on or off</strong>, then restart Windows. The Windows feature name is <code>HypervisorPlatform</code>. If WHPX is unavailable and Hydra offers AEHD, follow the installer prompt.</p>
+<p>For MSIX installs, use the Windows features dialog opened from Hydra to make the change. If firmware virtualization is off, switch it on first.</p>
+<h3 id="6-2-apk-installation-errors">6.2 APK installation errors</h3>
+<div class="tw"><table><thead><tr><th>Error</th><th>What to check</th></tr></thead><tbody><tr><td><code>INSTALL_FAILED_NO_MATCHING_ABIS</code></td><td>The app's native libraries require a compatible image. See <strong>ARM apps fail or crash</strong>.</td></tr><tr><td><code>INSTALL_FAILED_OLDER_SDK</code></td><td>The APK requires a newer Android version.</td></tr><tr><td><code>INSTALL_PARSE_FAILED_NO_CERTIFICATES</code> or <code>INSTALL_FAILED_INVALID_APK</code></td><td>Obtain a complete, correctly signed APK.</td></tr><tr><td><code>INSTALL_FAILED_UPDATE_INCOMPATIBLE</code></td><td>The existing installation has a different signing certificate. Use a matching build or uninstall the conflicting app first.</td></tr><tr><td><code>INSTALL_FAILED_VERSION_DOWNGRADE</code></td><td>Android already has a newer version. Install a newer APK or uninstall the current version first.</td></tr><tr><td><code>INSTALL_FAILED_INSUFFICIENT_STORAGE</code></td><td>Check host disk space and increase the Android data partition if needed.</td></tr><tr><td><code>INSTALL_FAILED_INVALID_URI</code></td><td>Try a short local path such as <code>C:\APK\app.apk</code>.</td></tr><tr><td><code>INSTALL_FAILED_DEPRECATED_SDK_VERSION</code> or <code>INSTALL_FAILED_TEST_ONLY</code></td><td>Hydra may retry with the relevant Android installer option.</td></tr><tr><td><code>INSTALL_FAILED_MISSING_SHARED_LIBRARY</code></td><td>The APK needs a system or vendor library the image does not provide.</td></tr><tr><td><code>INSTALL_FAILED_CONFLICTING_PROVIDER</code></td><td>Check for another installed package that declares the same content provider.</td></tr><tr><td><code>INSTALL_FAILED_USER_RESTRICTION</code> or <code>INSTALL_FAILED_INTERNAL_ERROR</code></td><td>Restart the runtime, wait for Android to finish booting, and try again.</td></tr></tbody></table></div>
+<h3 id="6-3-arm-apps-fail-or-crash">6.3 ARM apps fail or crash</h3>
+<p>Look for <code>NO_MATCHING_ABIS</code>, <code>DoBadTrampoline</code>, <code>libndk_translation</code>, or <code>UnsatisfiedLinkError</code> in the error or runtime log. Hydra can retry after preparing the compatible image and restarting the runtime. Check runtime setup if the system image is missing. If the retry fails or the app still crashes, export a diagnostic report with the APK architecture and error details.</p>
+<h3 id="6-4-adb-authorization">6.4 ADB authorization</h3>
+<p>If <code>adb devices</code> shows <code>unauthorized</code>, find the Android window and accept <strong>Allow USB debugging?</strong>. Select <strong>Always allow from this computer</strong> to remember the authorization. If the prompt is inaccessible, restart the runtime from diagnostics. Resetting the Android data partition is a last resort because it clears guest app data.</p>
+<p>Hydra uses a dedicated ADB server on port <code>5044</code>. From PowerShell, point your ADB client at that server.</p>
+<pre><code>$env:ANDROID_ADB_SERVER_PORT = &#x27;5044&#x27;
+adb devices</code></pre>
+<p>Keep the existing host ADB key. Replacing it can leave the guest trusting the previous key.</p>
+<h3 id="6-5-app-shortcut-or-window-fails-to-open">6.5 App shortcut or window fails to open</h3>
+<ol><li>Confirm the shortcut points to the current Hydra executable. Rebuild shortcuts from <strong>Settings → Integration &amp; Files</strong> if Hydra moved.</li><li>Give a cold boot time to complete. A restart to change orientation can take longer than opening a second app in a running guest.</li><li>If a window with only the Hydra controls appears, look for <code>attach failed</code> or <code>emu:0</code> in the report. Those errors point to a window attachment problem.</li><li>Export a report before resetting Android data. Use the reset only when needed to recover an unusable guest data partition. It clears installed app data.</li></ol>
+<h3 id="6-6-other-startup-problems">6.6 Other startup problems</h3>
+<div class="tw"><table><thead><tr><th>Symptom</th><th>Action</th></tr></thead><tbody><tr><td>Memory allocation failure</td><td>Close memory-heavy Windows applications or lower the guest memory and CPU settings.</td></tr><tr><td>Emulator port in use</td><td>Close other instances of the emulator if automatic port selection fails.</td></tr><tr><td>AVD is locked</td><td>Use the diagnostic repair after confirming the virtual device is not running elsewhere.</td></tr><tr><td>Snapshot fails to load</td><td>Use the diagnostic action to discard the snapshot and cold-boot the guest.</td></tr><tr><td>System image is missing or damaged</td><td>Prepare the runtime again from <strong>General &amp; Installation</strong>.</td></tr><tr><td>Disk is full</td><td>Free disk space or move the runtime data directory.</td></tr><tr><td>Graphics initialization fails</td><td>Run system preflight, update the host GPU driver, or choose a safer renderer.</td></tr><tr><td>A path fails to resolve</td><td>Try a short local installation or APK path.</td></tr></tbody></table></div>
+<h3 id="6-7-no-sound-or-low-volume">6.7 No sound or low volume</h3>
+<ol><li>Check Windows output selection and the per-app volume mixer, then check the media volume inside Android.</li><li>Enable <strong>Settings → Performance &amp; Resources → Audio Emulation</strong> and restart the runtime. Audio is selected when the guest starts.</li><li>In <code>services.msc</code>, confirm <strong>Windows Audio</strong> is running. Hydra also reports a stopped audio service under <strong>Diagnostics &amp; Fixes</strong>.</li><li>If you changed headphones or Bluetooth devices while Android was running, restart the guest to pick up the new output.</li></ol>
+<h3 id="6-8-store-build-startup-error-0xc0000135">6.8 Store build startup error 0xC0000135</h3>
+<p>Windows error <code>0xC0000135</code> (decimal <code>3221225781</code>) means a DLL failed to load. The cause may be MSIX path restrictions, a missing VC++ runtime, or a missing or quarantined runtime file.</p>
+<ol><li>Run the system preflight. If it finds a missing VC++ runtime, use the offered repair.</li><li>Check the Windows Application event log for <code>FaultingModuleName</code>, and review security software history for any affected runtime file.</li><li>Restart Hydra from the tray. If the error only occurs with an MSIX install, try a portable build from a local folder.</li><li>Attach the event details and Hydra diagnostic report when filing an issue.</li></ol>
+<h2 id="7-command-line">7. Command line</h2>
+<pre><code>&amp; &quot;.\Hydra Emulator.exe&quot;
+&amp; &quot;.\Hydra Emulator.exe&quot; &quot;C:\Downloads\app.apk&quot;
+&amp; &quot;.\Hydra Emulator.exe&quot; --launch com.example.app</code></pre>
+<h2 id="8-data-and-directories">8. Data and directories</h2>
+<div class="tw"><table><thead><tr><th>Data</th><th>Default location</th></tr></thead><tbody><tr><td>Settings and app list</td><td><code>settings.json</code> and <code>apps.json</code> in the Hydra data folder.</td></tr><tr><td>Runtime components</td><td><code>runtime</code> in the Hydra data folder, or <code>resources\runtime</code> for a bundled build.</td></tr><tr><td>System images and guest data</td><td><code>system-images</code> and <code>avd</code> beneath the runtime root.</td></tr><tr><td>Logs</td><td><code>logs\app.log</code> in the Hydra data folder.</td></tr><tr><td>Shared files</td><td><code>%USERPROFILE%\HydraShared</code> and Android's <code>/sdcard/HydraShared</code>.</td></tr></tbody></table></div>
+<p>Use <strong>Settings → Integration &amp; Files</strong> to find the active runtime and Android data folders. Custom data locations and MSIX installations use different paths. Back up your guest app data before using <strong>Reset Android Data</strong>.</p>
+<h2 id="9-get-help">9. Get help</h2>
+<p>Include the version, build type, steps to reproduce, and diagnostic report when you open a <a href="https://github.com/Lord1Egypt/Hydra-Emulator/issues">GitHub issue</a>.</p>
+</main>
+</div>
+<div class="btnbar"><button onclick="window.print()">Print / Save as PDF</button></div>
+<script>
+(function () {
+  var input = document.getElementById('tocSearch');
+  var links = Array.prototype.slice.call(document.querySelectorAll('#tocList a'));
+  if (!input) return;
+  input.addEventListener('input', function () {
+    var q = input.value.trim().toLowerCase();
+    links.forEach(function (a) { a.hidden = !!q && a.textContent.toLowerCase().indexOf(q) < 0; });
+  });
+  if (location.hash) {
+    var hit = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (hit) setTimeout(function () { hit.scrollIntoView({ block: 'start' }); }, 80);
+  }
+}());
+</script>
+</body>
+</html>

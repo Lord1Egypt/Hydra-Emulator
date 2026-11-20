@@ -1,0 +1,24 @@
+{
+  "format": "hydra-driver/1",
+  "id": "example-no-hypervisor-tcg",
+  "name": "No hardware acceleration .. direct to software simulation.)",
+  "version": "1.0.0",
+  "author": "Hydra Emulator",
+  "description": "The machine did not open the Virtual Machine Monitor Program platform, nor did it allow the kernel to be installed, and the hardware acceleration failed directly. This patch let Hydra Emulator start with software simulations (-accel off), saves two rounds of white etc.; and replaces the rewrite backend with software, avoids initial GL failure.",
+  "enabled": false,
+  "priority": 10,
+  "match": {
+    "platform": ["win32"],
+    "accel": ["none"]
+  },
+  "effect": {
+    "forceTcg": true,
+    "gpuMode": "software",
+    "configIni": {
+      "hw.gpu.mode": "software"
+    },
+    "notes": [
+      "Software simulations are 5-10 times faster than hardware, and it’s recommended that virtual platforms be connected to Windows functions when virtualization is possible."
+    ]
+  }
+}

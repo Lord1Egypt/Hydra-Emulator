@@ -1,0 +1,24 @@
+{
+  "format": "hydra-driver/1",
+  "id": "example-intel-igpu-software",
+  "name": "Intel Numeric . Software Rendering (examples))",
+  "version": "1.0.0",
+  "author": "Hydra Emulator",
+  "description": "The old Intel nuclear display (before HD/ UHD 6xx) has a GLES initialization failure or flower screen on some of the driver versions. Stretch the rendering back to software, and the image will come out.",
+  "enabled": false,
+  "priority": 0,
+  "match": {
+    "platform": ["win32"],
+    "gpuVendor": ["intel"]
+  },
+  "effect": {
+    "gpuMode": "software",
+    "configIni": {
+      "hw.gpu.mode": "software",
+      "hw.gpu.enabled": "yes"
+    },
+    "notes": [
+      "This machine is more suitable for light applications."
+    ]
+  }
+}

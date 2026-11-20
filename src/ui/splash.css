@@ -1,0 +1,194 @@
+/* Hydra Emulator splash · minimal Apple style
+   Generous whitespace + soft blurred glow + slowly breathing logo + gentle fade in/out.
+   All looping animations touch only transform / opacity, and blur applies only to static layers, so startup stays smooth. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, 'Segoe UI', sans-serif;
+  background: #0b0c0e;
+  color: #e8eaed;
+  -webkit-app-region: drag;   /* whole window is draggable */
+  user-select: none;
+}
+
+.splash {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 42%, #15181b 0%, #0d0e10 58%, #08090b 100%);
+  transition: opacity .55s cubic-bezier(.4, 0, .2, 1),
+              transform .55s cubic-bezier(.4, 0, .2, 1),
+              filter .55s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* Fade out: slight overall zoom + defocus, blending into the app */
+.splash.out {
+  opacity: 0;
+  transform: scale(1.03);
+  filter: blur(6px);
+}
+
+/* ---- Ambience light: two very faint cool glows, slowly breathing ---- */
+.aura, .halo {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(30px);
+}
+.aura {
+  width: 90%; height: 90%;
+  left: 5%; top: 3%;
+  background: radial-gradient(circle, rgba(18, 184, 134, .09) 0%, rgba(15, 157, 99, .03) 42%, transparent 70%);
+  animation: auraBreath 7s ease-in-out infinite;
+}
+.halo {
+  width: 62%; height: 62%;
+  left: 19%; top: 12%;
+  background: radial-gradient(circle, rgba(79, 140, 255, .07) 0%, transparent 68%);
+  animation: auraBreath 7s ease-in-out infinite reverse;
+}
+
+/* ---- Logo ---- */
+.logo-wrap {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  animation: rise .9s cubic-bezier(.2, .7, .3, 1) both;
+}
+/* Soft glow behind the logo, breathing together with it */
+.logo-glow {
+  position: absolute;
+  top: 48px; left: 50%;
+  width: 132px; height: 132px;
+  margin: -66px 0 0 -66px;
+  background: radial-gradient(circle, rgba(18, 184, 134, .28) 0%, rgba(15, 157, 99, .10) 45%, transparent 72%);
+  filter: blur(18px);
+  border-radius: 50%;
+  animation: glowBreath 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.logo {
+  position: relative;
+  width: 92px; height: 92px;
+  object-fit: contain;
+  animation: breathe 4s ease-in-out infinite;
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, .4));
+}
+.brand {
+  position: relative;
+  margin-top: 20px;
+  font-size: 27px; font-weight: 600;
+  letter-spacing: .8px;
+  color: #f2f5f3;
+  opacity: 0;
+  animation: fadeUp .85s ease-out .2s both;
+}
+.tagline {
+  position: relative;
+  margin-top: 7px;
+  font-size: 12.5px; color: #74817a;
+  letter-spacing: .4px;
+  opacity: 0;
+  animation: fadeUp .85s ease-out .34s both;
+}
+
+/* ---- Progress bar ---- */
+.progress-wrap {
+  position: relative;
+  margin-top: 40px;
+  width: 260px; height: 2px;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp .85s ease-out .5s both;
+}
+.progress-bar {
+  width: 0%; height: 100%;
+  background: linear-gradient(90deg, rgba(15, 157, 99, .7), #12b886);
+  border-radius: 2px;
+  transition: width .5s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ---- Status text ---- */
+.status {
+  position: relative;
+  margin-top: 15px;
+  font-size: 12.5px; color: #8a9a92;
+  letter-spacing: .2px;
+  min-height: 18px;
+  opacity: 0;
+  animation: fadeUp .85s ease-out .62s both;
+  transition: opacity .35s;
+}
+
+/* ---- First-run notice ---- */
+.first-run {
+  position: relative;
+  margin-top: 26px;
+  padding: 15px 22px;
+  background: rgba(255, 255, 255, .035);
+  border: 1px solid rgba(255, 255, 255, .055);
+  border-radius: 12px;
+  max-width: 372px;
+  opacity: 0;
+  animation: fadeUp .7s ease-out .78s both;
+}
+.first-run-title {
+  font-size: 12.5px; font-weight: 600;
+  color: #12b886;
+  margin-bottom: 9px;
+}
+.first-run-list {
+  list-style: none;
+  font-size: 11.5px; color: #8a9a92;
+  line-height: 1.85;
+}
+.first-run-list li::before {
+  content: '·';
+  margin-right: 8px;
+  color: #0f9d63;
+}
+
+/* ---- Footer ---- */
+.footer {
+  position: absolute; bottom: 15px;
+  font-size: 10.5px; color: #46514b;
+  letter-spacing: .3px;
+  opacity: 0;
+  animation: fadeUp .85s ease-out .95s both;
+}
+
+/* ---- Animation keyframes ---- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.035); }
+}
+@keyframes glowBreath {
+  0%, 100% { opacity: .5; transform: scale(.95); }
+  50%      { opacity: 1;  transform: scale(1.07); }
+}
+@keyframes auraBreath {
+  0%, 100% { opacity: .55; transform: scale(.97); }
+  50%      { opacity: 1;  transform: scale(1.05); }
+}
+
+/* Respect the system "reduce motion" preference: disable looping animations, keep static presentation only */
+@media (prefers-reduced-motion: reduce) {
+  .aura, .halo, .logo-glow, .logo { animation: none !important; }
+  .logo-wrap, .brand, .tagline, .progress-wrap, .status, .first-run, .footer {
+    animation-duration: .01ms !important; opacity: 1;
+  }
+}

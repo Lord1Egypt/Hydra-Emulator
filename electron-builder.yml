@@ -1,0 +1,67 @@
+appId: com.hydraemulator.win
+productName: Hydra Emulator
+copyright: Copyright © 2026 Hydra Emulator
+
+directories:
+  output: dist/release
+  buildResources: build
+
+# Minimal runtime files, source directory included directly without asar for clean process invocation
+asar: false
+files:
+  - src/**/*
+  - package.json
+  - LICENSE
+  - "!**/*.map"
+  - "!**/node_modules/**"
+  # Native precompiled LZMA library for runtime archive decompression
+  - "node_modules/@napi-rs/lzma/**"
+  - "node_modules/@napi-rs/lzma-win32-x64-msvc/**"
+  - "!node_modules/@napi-rs/lzma/*.md"
+  - "!node_modules/@napi-rs/lzma/*.ts"
+  - "!node_modules/@napi-rs/lzma/browser-entry.*"
+
+# Locales
+electronLanguages:
+  - en-US
+
+# Bundled runtime components (emulator + platform-tools + system image)
+extraResources:
+  - from: build/runtime
+    to: runtime
+    filter:
+      - "**/*"
+      - "!.prepared"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: src/ui/assets/appicon.ico
+  requestedExecutionLevel: asInvoker
+
+appx:
+  identityName: HydraEmulator
+  publisher: "CN=HydraEmulator"
+  publisherDisplayName: Hydra Emulator
+  displayName: Hydra Emulator
+  applicationId: HydraEmulator
+  capabilities:
+    - runFullTrust
+  languages:
+    - en-US
+  minVersion: 10.0.19041.0
+  maxVersionTested: 10.0.22621.0
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  displayLanguageSelector: false
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  artifactName: Hydra-Emulator-${version}-Setup.exe
+  include: build/installer.nsh
+
+compression: normal

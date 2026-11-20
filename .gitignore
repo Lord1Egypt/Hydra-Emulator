@@ -1,0 +1,39 @@
+node_modules/
+dist/
+build/runtime/
+build/_packout/
+.workbuddy/
+test/out/
+test/fixtures/
+test/*.png
+test/shot*.png
+*.log
+*.zip
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# Run Time Product (local download, not in library): binary, mirror, AVD data excluded
+engine/qemu/
+engine/emulator/
+engine/system-images/
+engine/platform-tools/
+engine/avd/
+engine/aehd/
+engine/_dl/
+engine/_tools/
+engine/*.iso
+engine/*.img
+engine/*.qcow2
+tools/platform-tools/adb.exe
+tools/platform-tools/*.dll
+
+# Intermediate product of store screen script (already regenerated))
+docs/store-shots/raw-*.png
+
+# Retrieving trial screenshots / temporary products (not in stock))
+build/_test/
+
+# Shortcuts to back up when clearing old files, etc. (not in library))
+build/_removed-backup/

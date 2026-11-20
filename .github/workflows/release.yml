@@ -1,0 +1,98 @@
+name: Build release assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing GitHub release tag, for example v0.6.3
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Windows packages and upload to the selected release
+    runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - name: Check the release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          if ($env:RELEASE_TAG -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+(?:-[a-zA-Z0-9.-]+)?$') {
+            throw 'Enter a valid release tag.'
+          }
+          gh release view "$env:RELEASE_TAG" --repo "$env:GITHUB_REPOSITORY"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run pack
+
+      - name: Package the portable build and incremental update
+        shell: pwsh
+        run: |
+          $tag = $env:RELEASE_TAG
+          $version = node -p "require('./package.json').version"
+          if ($tag -ne "v$version") { throw "The release tag must match package.json version $version." }
+          node build/zip.js "dist/Hydra Emulator-win64-portable" "Hydra-Emulator-$tag-win64-portable.zip"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node build/incremental.js "dist/Hydra Emulator-win64-portable" $tag
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare the Android runtime
+        run: node build/fetch-runtime.js engine
+
+      - run: node build/prepare-runtime.js --force
+        env:
+          XZ_PRESET: '6'
+          XZ_TIMEOUT_MS: '3600000'
+
+      - name: Download the VC++ runtime
+        shell: pwsh
+        run: |
+          curl.exe --fail --location --output 'build/runtime/vc_redist.x64.exe' 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Package the Windows installer
+        run: npx electron-builder --win nsis --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Package the runtime archive
+        shell: pwsh
+        run: |
+          tar.exe -a -cf "Hydra-Emulator-runtime-$env:RELEASE_TAG.zip" -C 'build/runtime' .
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload to the existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = $env:RELEASE_TAG
+          $setup = Get-ChildItem 'dist/release/*Setup.exe' | Select-Object -First 1
+          if (-not $setup) { throw 'The Windows installer was not built.' }
+          $assets = @(
+            "Hydra-Emulator-$tag-win64-portable.zip"
+            "Hydra-Emulator-$tag-manifest.json"
+            "Hydra-Emulator-$tag-app.zip"
+            "Hydra-Emulator-runtime-$tag.zip"
+            $setup.FullName
+          )
+          gh release upload "$tag" @assets --clobber
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
