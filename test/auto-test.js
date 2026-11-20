@@ -87,8 +87,10 @@ const { AdbClient, friendlyInstallError, friendlyLaunchError } = require('../src
     assert(v[v.length - 1].snapshot === false, 'The last one has to skip the snapshot loading.');
     assert(v[v.length - 1].wipe === false, 'No automatic retry will allow clearing of user data');
     assert(v[v.length - 1].memoryMB <= 2048, 'The last one should be down to minimum memory.');
-    const keys = v.map((x) => `${x.gpu}|${x.accel}|${x.wipe}|${x.memoryMB}|${x.snapshot !== false}`);
-    assert(new Set(keys).size === keys.length, 'Retesting should not be repeated');
+    const keys = v.map((x) => JSON.stringify([
+      x.gpu, x.accel, x.wipe, x.memoryMB, x.cores, x.dataMB, x.snapshot !== false,
+    ]));
+    assert(new Set(keys).size === keys.length, 'Each retry must use a distinct runtime configuration');
   });
 
   await test('The mirror is not a mirror change: sysdir should not clear the user data if the directory is changed', () => {
